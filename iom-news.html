@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Isle of Man — Government News</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;1,8..60,300&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --navy: #0d1f3c;
+      --navy-mid: #162d52;
+      --gold: #c9a84c;
+      --gold-light: #e8c97a;
+      --cream: #faf7f2;
+      --warm-white: #f5f0e8;
+      --text: #1a1a2e;
+      --muted: #6b7280;
+      --border: #e2d9c8;
+      --red: #b03a2e;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body { font-family: 'Source Serif 4', Georgia, serif; background: var(--cream); color: var(--text); min-height: 100vh; }
+
+    /* ── HEADER ── */
+    header { background: var(--navy); color: white; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 20px rgba(0,0,0,0.4); }
+    .header-inner { max-width: 1200px; margin: 0 auto; padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; gap: 2rem; }
+    .logo-block { display: flex; align-items: center; gap: 1.1rem; padding: 1rem 0; text-decoration: none; }
+    .logo-triskelion { width: 48px; height: 48px; flex-shrink: 0; }
+    .logo-text { display: flex; flex-direction: column; gap: 1px; }
+    .logo-text .country { font-family: 'Playfair Display', serif; font-size: 1.25rem; font-weight: 700; color: white; letter-spacing: 0.04em; line-height: 1; }
+    .logo-text .subtitle { font-size: 0.7rem; font-weight: 300; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold-light); opacity: 0.85; }
+    .header-divider { width: 1px; height: 36px; background: rgba(255,255,255,0.15); }
+    nav { display: flex; gap: 0.25rem; }
+    nav a { color: rgba(255,255,255,0.75); text-decoration: none; font-size: 0.78rem; font-family: 'Source Serif 4', serif; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.5rem 0.85rem; border-radius: 4px; transition: all 0.2s; }
+    nav a:hover { color: white; background: rgba(255,255,255,0.1); }
+
+    /* ── HERO ── */
+    .hero-strip { background: linear-gradient(135deg, var(--navy-mid) 0%, #1a3a6e 100%); padding: 2.5rem 2rem 2rem; border-bottom: 3px solid var(--gold); }
+    .hero-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: flex-end; justify-content: space-between; gap: 2rem; }
+    .hero-title { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 4vw, 3rem); font-weight: 900; color: white; line-height: 1.05; }
+    .hero-title em { font-style: italic; color: var(--gold-light); }
+    .hero-meta { text-align: right; flex-shrink: 0; }
+    .hero-date { color: rgba(255,255,255,0.6); font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; }
+    #live-date { color: var(--gold-light); font-size: 1rem; font-weight: 300; margin-top: 0.25rem; }
+
+    /* ── FILTER BAR ── */
+    .filter-bar { background: var(--warm-white); border-bottom: 1px solid var(--border); padding: 0.75rem 2rem; }
+    .filter-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .filter-label { font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+    .filter-divider { width: 1px; height: 20px; background: var(--border); }
+
+    .filter-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+    .filter-tag {
+      background: none; border: 1px solid var(--border); color: var(--muted);
+      font-size: 0.72rem; padding: 0.25rem 0.7rem; border-radius: 20px;
+      cursor: pointer; font-family: 'Source Serif 4', serif; letter-spacing: 0.05em; transition: all 0.2s;
+    }
+    .filter-tag:hover { border-color: var(--navy); color: var(--navy); }
+    .filter-tag.active { background: var(--navy); border-color: var(--navy); color: white; }
+
+    /* Year selector */
+    .year-select {
+      background: white; border: 1px solid var(--border); border-radius: 6px;
+      padding: 0.3rem 0.65rem; font-size: 0.78rem; font-family: 'Source Serif 4', serif;
+      color: var(--text); outline: none; cursor: pointer; transition: border-color 0.2s;
+    }
+    .year-select:focus { border-color: var(--navy); }
+    .year-select.active { border-color: var(--navy); background: var(--navy); color: white; }
+
+    /* Search */
+    .search-wrap { margin-left: auto; position: relative; }
+    .search-wrap input { background: white; border: 1px solid var(--border); border-radius: 6px; padding: 0.35rem 0.85rem 0.35rem 2rem; font-size: 0.8rem; font-family: 'Source Serif 4', serif; color: var(--text); outline: none; width: 220px; transition: border-color 0.2s; }
+    .search-wrap input:focus { border-color: var(--navy); }
+    .search-wrap svg { position: absolute; left: 0.6rem; top: 50%; transform: translateY(-50%); opacity: 0.4; pointer-events: none; }
+
+    /* Loading indicator for year fetch */
+    .year-fetch-bar { background: var(--navy); height: 3px; width: 0%; transition: width 0.4s ease; position: fixed; top: 0; left: 0; z-index: 999; }
+
+    /* ── MAIN LAYOUT ── */
+    main { max-width: 1200px; margin: 0 auto; padding: 2.5rem 2rem; display: grid; grid-template-columns: 1fr 320px; gap: 2.5rem; align-items: start; }
+
+    /* ── RESULT COUNT ── */
+    .result-info { font-size: 0.78rem; color: var(--muted); margin-bottom: 1rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .result-info strong { color: var(--navy); }
+    .clear-filters { font-size: 0.72rem; color: var(--gold); cursor: pointer; text-decoration: underline; }
+    .clear-filters:hover { color: var(--navy); }
+
+    /* ── FEATURED ARTICLE ── */
+    .featured-article { background: white; border: 1px solid var(--border); border-top: 4px solid var(--gold); padding: 2rem; margin-bottom: 1.5rem; transition: box-shadow 0.2s; animation: fadeUp 0.5s ease both; }
+    .featured-article:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.1); }
+    .featured-label { display: inline-block; background: var(--gold); color: var(--navy); font-size: 0.62rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; padding: 0.2rem 0.6rem; margin-bottom: 1rem; }
+    .featured-article h2 { font-family: 'Playfair Display', serif; font-size: clamp(1.4rem, 2.5vw, 1.9rem); font-weight: 700; line-height: 1.25; margin-bottom: 0.75rem; }
+    .featured-article h2 a { color: var(--navy); text-decoration: none; }
+    .featured-article h2 a:hover { text-decoration: underline; }
+    .featured-article .excerpt { color: var(--muted); font-size: 0.95rem; line-height: 1.65; margin-bottom: 1rem; font-weight: 300; }
+    .article-meta { display: flex; align-items: center; gap: 1rem; font-size: 0.72rem; color: var(--muted); flex-wrap: wrap; }
+    .article-meta .date { color: var(--navy); font-weight: 400; }
+    .article-meta .category { background: var(--warm-white); border: 1px solid var(--border); padding: 0.15rem 0.5rem; border-radius: 3px; font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; }
+    .read-more { color: var(--gold) !important; text-decoration: none; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.05em; margin-left: auto; }
+    .read-more:hover { text-decoration: underline !important; }
+
+    /* ── NEWS GRID ── */
+    .news-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); margin-bottom: 1px; }
+    .news-card { background: white; padding: 1.25rem 1.5rem; transition: background 0.15s; animation: fadeUp 0.5s ease both; }
+    .news-card:hover { background: #fefcf8; }
+    .news-card h3 { font-family: 'Playfair Display', serif; font-size: 0.95rem; font-weight: 700; line-height: 1.4; margin-bottom: 0.5rem; }
+    .news-card h3 a { color: var(--navy); text-decoration: none; }
+    .news-card h3 a:hover { text-decoration: underline; }
+    .news-card .excerpt { font-size: 0.8rem; color: var(--muted); line-height: 1.55; margin-bottom: 0.6rem; font-weight: 300; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+
+    /* ── LIST VIEW ── */
+    .news-list { background: var(--border); }
+    .news-list-item { background: white; padding: 1rem 1.5rem; display: flex; gap: 1.5rem; align-items: flex-start; border-bottom: 1px solid var(--border); transition: background 0.15s; animation: fadeUp 0.4s ease both; }
+    .news-list-item:last-child { border-bottom: none; }
+    .news-list-item:hover { background: #fefcf8; }
+    .list-date { flex-shrink: 0; width: 60px; text-align: center; padding-top: 2px; }
+    .list-date .day { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 900; color: var(--navy); line-height: 1; }
+    .list-date .mon { font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); }
+    .list-content h4 { font-family: 'Playfair Display', serif; font-size: 0.9rem; font-weight: 700; line-height: 1.4; margin-bottom: 0.25rem; }
+    .list-content h4 a { color: var(--navy); text-decoration: none; }
+    .list-content h4 a:hover { text-decoration: underline; }
+    .list-content p { font-size: 0.78rem; color: var(--muted); font-weight: 300; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .item-cat { font-size: 0.62rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 0.25rem; }
+
+    mark { background: #fff3c4; color: var(--navy); padding: 0 1px; border-radius: 2px; }
+    .source-badge { display: inline-block; font-size: 0.58rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.1rem 0.4rem; border-radius: 3px; margin-left: 0.4rem; vertical-align: middle; }
+    .source-badge.dfe { background: #1a5276; color: white; }
+    .source-badge.gov { background: var(--warm-white); color: var(--navy); border: 1px solid var(--border); }
+
+    /* ── SIDEBAR ── */
+    .sidebar { display: flex; flex-direction: column; gap: 1.5rem; }
+    .sidebar-widget { background: white; border: 1px solid var(--border); animation: fadeUp 0.6s ease both; }
+    .widget-head { background: var(--navy); color: white; padding: 0.65rem 1rem; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; }
+    .widget-body { padding: 1rem; }
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); }
+    .stat-cell { background: white; padding: 0.75rem; text-align: center; }
+    .stat-num { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 900; color: var(--navy); line-height: 1; }
+    .stat-label { font-size: 0.62rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 0.2rem; }
+    .recent-list { list-style: none; }
+    .recent-list li { padding: 0.6rem 0; border-bottom: 1px solid var(--border); }
+    .recent-list li:last-child { border-bottom: none; }
+    .recent-list a { font-size: 0.8rem; color: var(--navy); text-decoration: none; line-height: 1.4; display: block; font-family: 'Playfair Display', serif; }
+    .recent-list a:hover { text-decoration: underline; }
+    .recent-list .r-date { font-size: 0.65rem; color: var(--muted); margin-top: 0.15rem; }
+
+    /* ── STATE BLOCKS ── */
+    .state-block { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4rem 2rem; gap: 1rem; text-align: center; }
+    .spinner { width: 36px; height: 36px; border: 3px solid var(--border); border-top-color: var(--navy); border-radius: 50%; animation: spin 0.8s linear infinite; }
+    .state-msg { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
+
+    /* ── FOOTER ── */
+    footer { background: var(--navy); color: rgba(255,255,255,0.5); padding: 1.5rem 2rem; font-size: 0.72rem; letter-spacing: 0.08em; margin-top: 4rem; }
+    footer a { color: var(--gold-light); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+    .footer-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 900px) { main { grid-template-columns: 1fr; } .sidebar { order: -1; } }
+    @media (max-width: 600px) { .news-grid { grid-template-columns: 1fr; } nav { display: none; } .hero-meta { display: none; } .search-wrap { margin-left: 0; width: 100%; } .search-wrap input { width: 100%; } }
+  </style>
+</head>
+<body>
+
+<div class="year-fetch-bar" id="fetchBar"></div>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <a class="logo-block" href="#">
+      <svg class="logo-triskelion" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="40" cy="40" r="38" fill="#162d52" stroke="#c9a84c" stroke-width="1.5"/>
+        <g fill="#c9a84c">
+          <path d="M40 40 L44 18 Q45 14 42 13 Q38 12 37 16 L33 38 Z" opacity="0.9"/>
+          <path d="M40 40 L20 52 Q17 55 18 58 Q20 62 24 60 L43 45 Z" opacity="0.9"/>
+          <path d="M40 40 L60 52 Q63 54 65 52 Q67 49 64 46 L43 35 Z" opacity="0.9"/>
+          <circle cx="40" cy="40" r="5"/>
+          <circle cx="43" cy="14" r="3"/>
+          <circle cx="21" cy="59" r="3"/>
+          <circle cx="64" cy="49" r="3"/>
+        </g>
+        <circle cx="40" cy="40" r="32" stroke="#c9a84c" stroke-width="0.5" fill="none" stroke-dasharray="3 4" opacity="0.4"/>
+      </svg>
+      <div class="logo-text">
+        <span class="country">Isle of Man</span>
+        <span class="subtitle">Government News</span>
+      </div>
+    </a>
+    <div class="header-divider"></div>
+    <nav>
+      <a href="https://www.gov.im/news/" target="_blank" rel="noopener">gov.im ↗</a>
+    </nav>
+  </div>
+</header>
+
+<!-- HERO -->
+<div class="hero-strip">
+  <div class="hero-inner">
+    <h1 class="hero-title">Isle of Man<br><em>Government</em><br>News</h1>
+    <div class="hero-meta">
+      <div class="hero-date">Today</div>
+      <div id="live-date">—</div>
+    </div>
+  </div>
+</div>
+
+<!-- FILTER BAR -->
+<div class="filter-bar">
+  <div class="filter-inner">
+
+    <!-- Year selector -->
+    <span class="filter-label">Year:</span>
+    <select class="year-select" id="yearSelect" onchange="onYearChange()"></select>
+
+    <div class="filter-divider"></div>
+
+    <!-- Category tags -->
+    <span class="filter-label">Category:</span>
+    <div class="filter-tags" id="filterTags">
+      <button class="filter-tag active" data-cat="all" onclick="setFilter('all')">All</button>
+    </div>
+
+    <!-- Keyword search -->
+    <div class="search-wrap">
+      <svg width="13" height="13" viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="7" stroke="#666" stroke-width="2"/><path d="M15 15l4 4" stroke="#666" stroke-width="2" stroke-linecap="round"/></svg>
+      <input type="text" id="searchInput" placeholder="Search news…" oninput="onSearch()" />
+    </div>
+
+  </div>
+</div>
+
+<!-- MAIN -->
+<main>
+  <section>
+    <div class="state-block" id="loadingState">
+      <div class="spinner"></div>
+      <p class="state-msg" id="loadingMsg">Fetching latest news from gov.im…</p>
+    </div>
+    <div id="newsContent" style="display:none"></div>
+  </section>
+
+  <aside class="sidebar">
+    <div class="sidebar-widget">
+      <div class="widget-head">At a Glance</div>
+      <div class="stats-grid">
+        <div class="stat-cell"><div class="stat-num" id="statTotal">—</div><div class="stat-label">Loaded</div></div>
+        <div class="stat-cell"><div class="stat-num" id="statShown">—</div><div class="stat-label">Shown</div></div>
+        <div class="stat-cell"><div class="stat-num" id="statToday">—</div><div class="stat-label">Today</div></div>
+        <div class="stat-cell"><div class="stat-num" id="statCats">—</div><div class="stat-label">Categories</div></div>
+      </div>
+    </div>
+
+    <div class="sidebar-widget">
+      <div class="widget-head">Most Recent</div>
+      <div class="widget-body">
+        <ul class="recent-list" id="recentList"><li><span class="state-msg">Loading…</span></li></ul>
+      </div>
+    </div>
+
+    <div class="sidebar-widget">
+      <div class="widget-head">Source</div>
+      <div class="widget-body" style="font-size:0.78rem; color:var(--muted); line-height:1.6;">
+        <p>Sourced from the official <strong style="color:var(--navy)">Isle of Man Government</strong> website at <a href="https://www.gov.im/news/" target="_blank" style="color:var(--gold);">gov.im/news</a>.</p>
+        <div style="margin-top:0.75rem; padding-top:0.75rem; border-top:1px solid var(--border);">
+          <span id="lastUpdated" style="font-size:0.7rem; letter-spacing:0.05em; text-transform:uppercase;">Last updated: —</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <span>Isle of Man Government News</span>
+    <span>Content © <a href="https://www.gov.im" target="_blank" rel="noopener">Isle of Man Government</a></span>
+    <span style="cursor:pointer; color:var(--gold-light);" onclick="reload()">↻ Refresh</span>
+  </div>
+</footer>
+
+<script>
+  const WORKER_URL = 'https://autumn-credit-6aaf.rob-mercer.workers.dev/';
+  const ARCHIVE_YEARS = [2025, 2024, 2023, 2022, 2021, 2020];
+
+  // ── State ──
+  let allItems      = [];   // currently loaded items (for selected year)
+  let currentFilter = 'all';
+  let currentSearch = '';
+  let currentYear   = 'latest';
+  const yearCache   = {};
+
+  // ── Live date & dynamic year dropdown ──
+  const TODAY = new Date();
+  const THIS_YEAR = TODAY.getFullYear();
+  const FIRST_YEAR = 2020;
+
+  document.getElementById('live-date').textContent =
+    TODAY.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+
+  // Build year dropdown: current year at top, back to FIRST_YEAR
+  const yearSel = document.getElementById('yearSelect');
+  for (let y = THIS_YEAR; y >= FIRST_YEAR; y--) {
+    const opt = document.createElement('option');
+    opt.value = y === THIS_YEAR ? 'latest' : String(y);
+    opt.textContent = y === THIS_YEAR ? `${y} (current)` : String(y);
+    yearSel.appendChild(opt);
+  }
+
+  // ── Fetch ──
+  async function workerFetch(site, path) {
+    const params = new URLSearchParams({ site });
+    if (path) params.set('path', path);
+    const res = await fetch(`${WORKER_URL}?${params}`, { signal: AbortSignal.timeout(15000) });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return res.text();
+  }
+
+  // Fetch all pages from DfE news-events listing
+  async function fetchDfE() {
+    const collected = [];
+    const seen = new Set();
+    let page = 1;
+    const MAX_PAGES = 50;
+    while (page <= MAX_PAGES) {
+      const msgEl = document.getElementById('loadingMsg');
+      if (msgEl) msgEl.textContent = `Loading DfE news — page ${page}…`;
+      const path = page === 1 ? '/news-events/' : `/news-events/?page=${page}`;
+      try {
+        const text = await workerFetch('dfe', path);
+        const doc = new DOMParser().parseFromString(text, 'text/html');
+        const { items, hasNext } = parseDfEPage(doc, seen);
+        collected.push(...items);
+        if (!hasNext) break;
+        page++;
+      } catch(e) { break; }
+    }
+    return collected;
+  }
+
+  // Parse a DfE news listing page
+  function parseDfEPage(doc, seen = new Set()) {
+    const items = [];
+    // DfE article links follow the pattern /news-events/some-slug/
+    for (const a of doc.querySelectorAll('a[href*="/news-events/"]')) {
+      const href = a.getAttribute('href') || '';
+      // Skip the listing page itself and pagination links
+      if (href.replace(/\/$/, '') === '/news-events' || href.includes('?page=')) continue;
+      const title = a.textContent?.trim() || a.querySelector('h2,h3,h4')?.textContent?.trim();
+      if (!title || title.length < 10) continue;
+      const link = href.startsWith('http') ? href : 'https://www.iomdfenterprise.im' + href;
+      if (seen.has(link)) continue;
+      seen.add(link);
+      // DfE pages don't embed dates in the URL so we leave pubDate as unknown
+      const parent = a.closest('li,article,div,section');
+      const excerpt = parent?.querySelector('p')?.textContent?.trim() || '';
+      // Try to find a date string near the link (e.g. "12 March 2025")
+      const parentText = parent?.textContent || '';
+      const dateMatch = parentText.match(/(\d{1,2})\s+(January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d{4})/i);
+      const pubDate = dateMatch ? new Date(`${dateMatch[2]} ${dateMatch[1]} ${dateMatch[3]}`) : new Date(0);
+      items.push({ title, link, description: excerpt, pubDate, category: 'Business', source: 'DfE' });
+    }
+    const hasNext = !!doc.querySelector('a[href*="?page="], a[rel="next"], .pager-next a, .next a, a.next, li.next a');
+    return { items, hasNext };
+  }
+
+  async function fetchLatest() {
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth(); // 0 = Jan
+    const monthSlugs = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+
+    const collected = [];
+    const seen = new Set();
+
+    for (let m = 0; m <= currentMonth; m++) {
+      const month = monthSlugs[m];
+      const msgEl = document.getElementById('loadingMsg');
+      if (msgEl) msgEl.textContent = `Loading ${currentYear} — ${month.toUpperCase()}…`;
+      const bar = document.getElementById('fetchBar');
+      if (bar) bar.style.width = `${Math.min(10 + (m / (currentMonth + 1)) * 80, 90)}%`;
+
+      // Each month may also have multiple pages
+      let page = 1;
+      const MAX_PAGES = 20;
+      while (page <= MAX_PAGES) {
+        const path = page === 1
+          ? `/news/${currentYear}/${month}/`
+          : `/news/${currentYear}/${month}/?page=${page}`;
+        try {
+          const text = await workerFetch('gov', path);
+          const doc = new DOMParser().parseFromString(text, 'text/html');
+          const { items, hasNext } = parseHTMLPage(doc, seen);
+          collected.push(...items);
+          if (!hasNext) break;
+          page++;
+        } catch(e) {
+          break; // skip months that 404 or error
+        }
+      }
+    }
+
+    return collected;
+  }
+
+  async function fetchYear(year) {
+    if (yearCache[year]) return yearCache[year];
+
+    const collected = [];
+    const seen = new Set();
+    let page = 1;
+    const MAX_PAGES = 50;
+
+    while (page <= MAX_PAGES) {
+      const msgEl = document.getElementById('loadingMsg');
+      if (msgEl) msgEl.textContent = `Loading ${year} — page ${page}…`;
+      const bar = document.getElementById('fetchBar');
+      if (bar) bar.style.width = `${Math.min(10 + page * 8, 90)}%`;
+
+      const path = page === 1 ? `/news/${year}/` : `/news/${year}/?page=${page}`;
+      const text = await workerFetch('gov', path);
+      const doc = new DOMParser().parseFromString(text, 'text/html');
+      const { items, hasNext } = parseHTMLPage(doc, seen);
+      collected.push(...items);
+      if (!hasNext) break;
+      page++;
+    }
+
+    yearCache[year] = collected;
+    return collected;
+  }
+
+  // ── Parsers ──
+  function absoluteUrl(href) {
+    if (!href) return '';
+    href = href.trim();
+    if (href.startsWith('http://') || href.startsWith('https://')) return href;
+    if (href.startsWith('//')) return 'https:' + href;
+    if (href.startsWith('/')) return 'https://www.gov.im' + href;
+    return 'https://www.gov.im/' + href;
+  }
+
+  function parseXML(doc) {
+    return Array.from(doc.querySelectorAll('item, entry')).map(item => {
+      const get = tag => item.querySelector(tag)?.textContent?.trim() || '';
+      const pubDate = get('pubDate') || get('published') || get('updated');
+      return {
+        title: get('title'),
+        link: absoluteUrl(get('link') || get('guid')),
+        description: stripHtml(get('description') || get('summary') || get('content')),
+        pubDate: pubDate ? new Date(pubDate) : new Date(0),
+        category: get('category') || inferCategory(get('title'))
+      };
+    }).filter(i => i.title);
+  }
+
+  // Parse one HTML page; return items found and whether a next page link exists
+  function parseHTMLPage(doc, seen = new Set()) {
+    const items = [];
+    for (const a of doc.querySelectorAll('a[href*="/news/20"]')) {
+      const title = a.textContent?.trim();
+      const link = absoluteUrl(a.getAttribute('href') || '');
+      if (!title || title.length < 10 || seen.has(link)) continue;
+      seen.add(link);
+      const m = link.match(/\/(\d{4})\/([a-z]{3})\/(\d{1,2})\//i);
+      const pubDate = m ? new Date(`${m[2]} ${m[3]} ${m[1]}`) : new Date(0);
+      const excerpt = a.closest('li,article,div')?.querySelector('p')?.textContent?.trim() || '';
+      items.push({ title, link, description: excerpt, pubDate, category: inferCategory(title) });
+    }
+    // Detect a next-page link
+    const hasNext = !!doc.querySelector(
+      'a[href*="?page="], a[rel="next"], .pager-next a, .next a, a.next, li.next a'
+    );
+    return { items, hasNext };
+  }
+
+  // Thin wrapper for fetchLatest fallback
+  function parseHTML(doc) {
+    return parseHTMLPage(doc).items;
+  }
+
+  function inferCategory(t) {
+    t = (t || '').toLowerCase();
+    if (t.includes('health') || t.includes('hospital') || t.includes('manx care') || t.includes('gp ') || t.includes('nhs') || t.includes('mental health') || t.includes('pharmacy')) return 'Health';
+    if (t.includes('school') || t.includes('education') || t.includes('student') || t.includes('university') || t.includes('college') || t.includes('pupil') || t.includes('curriculum')) return 'Education';
+    if (t.includes('transport') || t.includes('bus vannin') || t.includes('ferry') || t.includes('airport') || t.includes('highway') || t.includes('road closure') || t.includes('steam railway')) return 'Transport';
+    if (t.includes('planning') || t.includes('housing') || t.includes('development application') || t.includes('building regulation')) return 'Planning';
+    if (t.includes('treasury') || t.includes('budget') || t.includes('tax') || t.includes('revenue') || t.includes('customs') || t.includes('economic strategy') || t.includes('financial services')) return 'Finance';
+    if (t.includes('environment') || t.includes('climate') || t.includes('wildlife') || t.includes('biodiversity') || t.includes('pollution') || t.includes('recycling') || t.includes('carbon')) return 'Environment';
+    if (t.includes('police') || t.includes('court') || t.includes('crime') || t.includes('justice') || t.includes('prosecution') || t.includes('constabulary') || t.includes('prison')) return 'Justice';
+    if (t.includes('tourism') || t.includes('visit isle of man') || t.includes('visitor economy') || t.includes(' tt ') || t.includes('tt 20') || t.includes('festival') || t.includes('manx grand prix')) return 'Tourism';
+    if (t.includes('sanction') || t.includes('financial sanction')) return 'Sanctions';
+    if (t.includes('farm') || t.includes('agri') || t.includes('livestock') || t.includes('fishery') || t.includes('fisheries') || t.includes('rural') || t.includes('forestry')) return 'Agriculture';
+    if (t.includes('benefit') || t.includes('pension') || t.includes('social security') || t.includes('welfare') || t.includes('employment support')) return 'Social Security';
+    if (t.includes('tynwald') || t.includes('keys') || t.includes('council of ministers') || t.includes('chief minister') || t.includes('minister') || t.includes('department of')) return 'Government';
+    return 'General';
+  }
+
+  function stripHtml(html) {
+    const d = document.createElement('div');
+    d.innerHTML = html;
+    return d.textContent?.replace(/\s+/g, ' ').trim() || '';
+  }
+
+  function formatDate(d) {
+    if (!d || d.getFullYear() < 2000) return '';
+    return d.toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' });
+  }
+
+  function isToday(d) {
+    const t = new Date();
+    return d.getDate()===t.getDate() && d.getMonth()===t.getMonth() && d.getFullYear()===t.getFullYear();
+  }
+
+  function escHtml(s) {
+    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+
+  function highlight(text, q) {
+    if (!q) return escHtml(text);
+    return escHtml(text).replace(new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi'), '<mark>$1</mark>');
+  }
+
+  function sourceBadge(item) {
+    if (item.source === 'DfE') return '<span class="source-badge dfe">DfE</span>';
+    return '';
+  }
+
+  // ── Filtered view ──
+  function filteredItems() {
+    const q = currentSearch.toLowerCase();
+    return allItems.filter(item => {
+      if (currentFilter !== 'all' && item.category !== currentFilter) return false;
+      if (q && !item.title.toLowerCase().includes(q) && !item.description.toLowerCase().includes(q)) return false;
+      return true;
+    });
+  }
+
+  // ── Render ──
+  function render() {
+    const items = filteredItems();
+    const q = currentSearch;
+    const container = document.getElementById('newsContent');
+
+    // Update sidebar stats
+    document.getElementById('statShown').textContent = items.length;
+
+    // Result info bar
+    const isFiltered = currentFilter !== 'all' || currentSearch;
+    let infoHtml = `<div class="result-info">
+      <span>Showing <strong>${items.length}</strong> of <strong>${allItems.length}</strong> releases${currentYear !== 'latest' ? ` from <strong>${currentYear}</strong>` : ''}</span>
+      ${isFiltered ? `<span class="clear-filters" onclick="clearFilters()">Clear filters</span>` : ''}
+    </div>`;
+
+    if (!items.length) {
+      container.innerHTML = infoHtml + `<div class="state-block"><p class="state-msg">No articles match your filters.</p></div>`;
+      return;
+    }
+
+    const featured = items[0];
+    const grid = items.slice(1, 5);
+    const list = items.slice(5);
+    let html = infoHtml;
+
+    // Featured
+    html += `
+      <article class="featured-article">
+        <span class="featured-label">${currentYear === 'latest' ? 'Latest Dispatch' : 'Top Result'}</span>
+        <h2><a href="${escHtml(featured.link)}" target="_blank" rel="noopener">${highlight(featured.title, q)}</a>${sourceBadge(featured)}</h2>
+        ${featured.description ? `<p class="excerpt">${highlight(featured.description.slice(0,260), q)}${featured.description.length>260?'…':''}</p>` : ''}
+        <div class="article-meta">
+          <span class="date">${formatDate(featured.pubDate)}</span>
+          <span class="category">${escHtml(featured.category)}</span>
+          <a href="${escHtml(featured.link)}" target="_blank" rel="noopener" class="read-more">Read full release →</a>
+        </div>
+      </article>`;
+
+    if (grid.length) {
+      html += '<div class="news-grid">';
+      grid.forEach((item, i) => {
+        html += `
+          <article class="news-card" style="animation-delay:${0.05*i}s">
+            <h3><a href="${escHtml(item.link)}" target="_blank" rel="noopener">${highlight(item.title, q)}</a>${sourceBadge(item)}</h3>
+            ${item.description ? `<p class="excerpt">${highlight(item.description.slice(0,120), q)}…</p>` : ''}
+            <div class="article-meta">
+              <span class="date">${formatDate(item.pubDate)}</span>
+              <span class="category">${escHtml(item.category)}</span>
+            </div>
+          </article>`;
+      });
+      html += '</div>';
+    }
+
+    if (list.length) {
+      html += '<div class="news-list">';
+      list.forEach((item, i) => {
+        const d = item.pubDate;
+        const day = d.getFullYear()>2000 ? d.getDate().toString().padStart(2,'0') : '—';
+        const mon = d.getFullYear()>2000 ? d.toLocaleString('en-GB',{month:'short'}).toUpperCase() : '';
+        html += `
+          <article class="news-list-item" style="animation-delay:${0.02*i}s">
+            <div class="list-date"><div class="day">${day}</div><div class="mon">${mon}</div></div>
+            <div class="list-content">
+              <h4><a href="${escHtml(item.link)}" target="_blank" rel="noopener">${highlight(item.title, q)}</a>${sourceBadge(item)}</h4>
+              ${item.description ? `<p>${highlight(item.description.slice(0,160), q)}…</p>` : ''}
+              <div class="item-cat">${escHtml(item.category)}</div>
+            </div>
+          </article>`;
+      });
+      html += '</div>';
+    }
+
+    container.innerHTML = html;
+  }
+
+  function renderSidebar() {
+    const todayCount = allItems.filter(i => isToday(i.pubDate)).length;
+    const cats = new Set(allItems.map(i => i.category)).size;
+    document.getElementById('statTotal').textContent = allItems.length;
+    document.getElementById('statToday').textContent = todayCount;
+    document.getElementById('statCats').textContent = cats;
+    document.getElementById('recentList').innerHTML = allItems.slice(0,6).map(item => `
+      <li><a href="${escHtml(item.link)}" target="_blank" rel="noopener">${escHtml(item.title)}</a>
+      <div class="r-date">${formatDate(item.pubDate)}</div></li>`).join('');
+    document.getElementById('lastUpdated').textContent = `Last updated: ${new Date().toLocaleTimeString('en-GB')}`;
+  }
+
+  function renderFilters() {
+    const cats = ['all', ...Array.from(new Set(allItems.map(i => i.category))).sort()];
+    document.getElementById('filterTags').innerHTML = cats.map(cat => `
+      <button class="filter-tag ${cat===currentFilter?'active':''}" data-cat="${escHtml(cat)}" onclick="setFilter('${escHtml(cat)}')">${cat==='all'?'All':escHtml(cat)}</button>
+    `).join('');
+  }
+
+  // ── Interactions ──
+  function setFilter(cat) {
+    currentFilter = cat;
+    document.querySelectorAll('.filter-tag').forEach(b => b.classList.toggle('active', b.dataset.cat===cat));
+    render();
+  }
+
+  function onSearch() {
+    currentSearch = document.getElementById('searchInput').value;
+    render();
+  }
+
+  function clearFilters() {
+    currentFilter = 'all';
+    currentSearch = '';
+    document.getElementById('searchInput').value = '';
+    document.querySelectorAll('.filter-tag').forEach(b => b.classList.toggle('active', b.dataset.cat==='all'));
+    render();
+  }
+
+  async function onYearChange() {
+    const year = document.getElementById('yearSelect').value;
+    currentYear = year;
+    currentFilter = 'all';
+    currentSearch = '';
+    document.getElementById('searchInput').value = '';
+
+    document.getElementById('newsContent').style.display = 'none';
+    document.getElementById('loadingState').style.display = 'flex';
+    document.getElementById('loadingMsg').textContent =
+      year === 'latest' ? 'Fetching latest news from gov.im…' : `Loading ${year} news archive…`;
+
+    // Progress bar animation
+    const bar = document.getElementById('fetchBar');
+    bar.style.width = '30%';
+
+    try {
+      // Fetch gov.im and DfE in parallel; DfE only shown for current year
+      const govPromise = year === 'latest' ? fetchLatest() : fetchYear(parseInt(year));
+      const dfePromise = year === 'latest' ? fetchDfE() : Promise.resolve([]);
+      const [govItems, dfeItems] = await Promise.allSettled([govPromise, dfePromise]);
+
+      const gov = govItems.status === 'fulfilled' ? govItems.value : [];
+      const dfe = dfeItems.status === 'fulfilled' ? dfeItems.value : [];
+      allItems = [...gov, ...dfe].sort((a,b) => b.pubDate - a.pubDate);
+
+      if (!allItems.length) throw new Error('No articles found');
+      bar.style.width = '100%';
+      setTimeout(() => { bar.style.width = '0%'; }, 400);
+      renderFilters();
+      renderSidebar();
+      render();
+      document.getElementById('loadingState').style.display = 'none';
+      document.getElementById('newsContent').style.display = 'block';
+    } catch (err) {
+      bar.style.width = '0%';
+      document.getElementById('loadingState').innerHTML = `
+        <div style="color:var(--red);font-size:1.5rem;">⚠</div>
+        <p class="state-msg"><strong>Could not load news.</strong><br>${escHtml(err.message)}</p>
+        <button onclick="reload()" style="margin-top:1rem;background:var(--navy);color:white;border:none;padding:0.5rem 1.25rem;font-family:inherit;cursor:pointer;border-radius:4px;">↻ Try Again</button>`;
+    }
+  }
+
+  function reload() {
+    document.getElementById('yearSelect').value = currentYear;
+    onYearChange();
+  }
+
+  // ── Initial load ──
+  onYearChange();
+</script>
+</body>
+</html>
